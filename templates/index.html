@@ -1,0 +1,413 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptographic Cipher Core</title>
+    <!-- Bootstrap 5 + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        /* Global Cyberpunk / Dark Theme */
+        body {
+            background: #0b0e14;
+            color: #c8d6e5;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 1400px;
+        }
+        /* Glowing header */
+        .glow-header {
+            text-align: center;
+            padding: 30px 0 20px;
+            font-weight: 700;
+            font-size: 3.5rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #00bfff, 0 0 80px #00bfff;
+            color: #e0f7ff;
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow-header small {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            display: block;
+            -webkit-text-fill-color: #aaa;
+            text-shadow: 0 0 5px #0ff;
+        }
+        /* Panels */
+        .panel {
+            background: rgba(20, 30, 45, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.05), inset 0 0 30px rgba(0, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+        .panel:hover {
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+        }
+        .panel-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        /* Form elements */
+        .form-control, .form-select {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            color: #c8d6e5;
+            font-family: 'Courier New', monospace;
+            transition: 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: #0ff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            color: #fff;
+        }
+        .form-control::placeholder {
+            color: #5a6a7a;
+        }
+        .btn-cyber {
+            background: transparent;
+            border: 1px solid #0ff;
+            color: #0ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 10px 25px;
+            border-radius: 30px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+        .btn-cyber:hover {
+            background: #0ff;
+            color: #0b0e14;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+            transform: scale(1.03);
+        }
+        .btn-cyber-secondary {
+            border-color: #7b2ffc;
+            color: #b388ff;
+            box-shadow: 0 0 15px rgba(123, 47, 252, 0.1);
+        }
+        .btn-cyber-secondary:hover {
+            background: #7b2ffc;
+            color: #fff;
+            box-shadow: 0 0 40px rgba(123, 47, 252, 0.4);
+        }
+        /* Terminal output */
+        .terminal {
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #0ff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #aaffaa;
+            min-height: 80px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.05), inset 0 0 20px rgba(0, 255, 255, 0.03);
+            transition: all 0.5s ease;
+            word-break: break-all;
+        }
+        .terminal-glow {
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.2), inset 0 0 30px rgba(0, 255, 255, 0.05);
+            border-color: #0ff;
+        }
+        .terminal-label {
+            color: #0ff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        /* RSA key output */
+        .key-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #7b2ffc;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.8rem;
+            color: #d1c4e9;
+            box-shadow: 0 0 20px rgba(123, 47, 252, 0.05);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .key-box .key-label {
+            color: #b388ff;
+            font-weight: bold;
+        }
+        /* Loading spinner */
+        .spinner-border-sm {
+            width: 1.2rem;
+            height: 1.2rem;
+            border-width: 0.15rem;
+        }
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .glow-header {
+                font-size: 2.2rem;
+            }
+            .panel-title {
+                font-size: 1.3rem;
+            }
+        }
+        /* Scrollbar style */
+        .terminal::-webkit-scrollbar, .key-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .terminal::-webkit-scrollbar-track, .key-box::-webkit-scrollbar-track {
+            background: #0b0e14;
+        }
+        .terminal::-webkit-scrollbar-thumb, .key-box::-webkit-scrollbar-thumb {
+            background: #0ff;
+            border-radius: 10px;
+        }
+        .key-box::-webkit-scrollbar-thumb {
+            background: #7b2ffc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="glow-header">
+            CRYPTOGRAPHIC CIPHER CORE
+            <small>⚡ Symmetric Vault · RSA Forge ⚡</small>
+        </div>
+
+        <!-- Main Row -->
+        <div class="row g-4 mt-3">
+            <!-- LEFT: Symmetric Cipher -->
+            <div class="col-lg-6">
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="bi bi-lock-fill me-2"></i>Symmetric Block Cipher Vault
+                    </div>
+                    <div class="mb-3">
+                        <label for="sym-input" class="form-label text-light">Input <span class="text-muted">(plaintext or hex)</span></label>
+                        <textarea class="form-control" id="sym-input" rows="4" placeholder="Enter text to encrypt, or hex to decrypt..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sym-passphrase" class="form-label text-light">Passphrase</label>
+                        <input type="password" class="form-control" id="sym-passphrase" placeholder="Secure key passphrase">
+                    </div>
+                    <div class="d-flex gap-3 flex-wrap mb-3">
+                        <button class="btn btn-cyber" id="sym-encrypt-btn"><i class="bi bi-shield-lock-fill me-1"></i> Encrypt</button>
+                        <button class="btn btn-cyber btn-cyber-secondary" id="sym-decrypt-btn"><i class="bi bi-unlock-fill me-1"></i> Decrypt</button>
+                        <button class="btn btn-outline-secondary btn-sm" id="sym-clear-btn" style="border-color:#555;color:#aaa;">Clear</button>
+                    </div>
+                    <div>
+                        <span class="terminal-label"><i class="bi bi-terminal-fill me-1"></i> Output</span>
+                        <div class="terminal" id="sym-output">Awaiting action...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: RSA Key Pair Generator -->
+            <div class="col-lg-6">
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="bi bi-key-fill me-2"></i>Asymmetric RSA Key Pair Forge
+                    </div>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label for="rsa-size" class="form-label text-light">Key Size (bits)</label>
+                            <select class="form-select" id="rsa-size">
+                                <option value="128">128</option>
+                                <option value="256" selected>256</option>
+                                <option value="512">512</option>
+                                <option value="1024">1024</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-cyber w-100" id="rsa-generate-btn"><i class="bi bi-plus-circle-fill me-1"></i> Generate Keys</button>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="key-box" id="rsa-public-output">
+                            <span class="key-label">🔑 Public Key</span><br>
+                            <span class="text-muted">(n, e) — click Generate</span>
+                        </div>
+                        <div class="key-box" id="rsa-private-output">
+                            <span class="key-label">🔐 Private Key</span><br>
+                            <span class="text-muted">(n, d) — keep secret</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <span class="terminal-label"><i class="bi bi-info-circle me-1"></i> Status</span>
+                        <div class="terminal" id="rsa-status" style="min-height:40px;font-size:0.8rem;">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Helper: toggle loading state on button
+        function setLoading(btn, loading) {
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.origHtml || btn.innerHTML;
+            }
+        }
+
+        // Store original button HTML
+        document.querySelectorAll('.btn-cyber').forEach(btn => {
+            btn.dataset.origHtml = btn.innerHTML;
+        });
+
+        // Symmetric encrypt
+        document.getElementById('sym-encrypt-btn').addEventListener('click', function() {
+            const input = document.getElementById('sym-input').value.trim();
+            const passphrase = document.getElementById('sym-passphrase').value.trim();
+            const output = document.getElementById('sym-output');
+            if (!input || !passphrase) {
+                output.innerHTML = '<span style="color:#ff6b6b;">❌ Please provide input and passphrase.</span>';
+                return;
+            }
+            const btn = this;
+            setLoading(btn, true);
+            fetch('/symmetric/encrypt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plaintext: input, passphrase: passphrase })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setLoading(btn, false);
+                if (data.error) {
+                    output.innerHTML = `<span style="color:#ff6b6b;">❌ ${data.error}</span>`;
+                } else {
+                    output.innerHTML = `<span style="color:#0ff;">▶ Ciphertext (hex):</span><br><span style="color:#aaffaa;">${data.ciphertext_hex}</span>`;
+                    output.classList.add('terminal-glow');
+                    setTimeout(() => output.classList.remove('terminal-glow'), 2000);
+                }
+            })
+            .catch(err => {
+                setLoading(btn, false);
+                output.innerHTML = `<span style="color:#ff6b6b;">❌ Network error: ${err.message}</span>`;
+            });
+        });
+
+        // Symmetric decrypt
+        document.getElementById('sym-decrypt-btn').addEventListener('click', function() {
+            const input = document.getElementById('sym-input').value.trim();
+            const passphrase = document.getElementById('sym-passphrase').value.trim();
+            const output = document.getElementById('sym-output');
+            if (!input || !passphrase) {
+                output.innerHTML = '<span style="color:#ff6b6b;">❌ Please provide hex ciphertext and passphrase.</span>';
+                return;
+            }
+            const btn = this;
+            setLoading(btn, true);
+            fetch('/symmetric/decrypt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ciphertext_hex: input, passphrase: passphrase })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setLoading(btn, false);
+                if (data.error) {
+                    output.innerHTML = `<span style="color:#ff6b6b;">❌ ${data.error}</span>`;
+                } else {
+                    output.innerHTML = `<span style="color:#0ff;">▶ Decrypted plaintext:</span><br><span style="color:#aaffaa;">${data.plaintext}</span>`;
+                    output.classList.add('terminal-glow');
+                    setTimeout(() => output.classList.remove('terminal-glow'), 2000);
+                }
+            })
+            .catch(err => {
+                setLoading(btn, false);
+                output.innerHTML = `<span style="color:#ff6b6b;">❌ Network error: ${err.message}</span>`;
+            });
+        });
+
+        // Clear symmetric input/output
+        document.getElementById('sym-clear-btn').addEventListener('click', function() {
+            document.getElementById('sym-input').value = '';
+            document.getElementById('sym-passphrase').value = '';
+            document.getElementById('sym-output').innerHTML = 'Awaiting action...';
+        });
+
+        // RSA key generation
+        document.getElementById('rsa-generate-btn').addEventListener('click', function() {
+            const sizeSelect = document.getElementById('rsa-size');
+            const keySize = parseInt(sizeSelect.value);
+            const status = document.getElementById('rsa-status');
+            const pubBox = document.getElementById('rsa-public-output');
+            const privBox = document.getElementById('rsa-private-output');
+            const btn = this;
+
+            setLoading(btn, true);
+            status.innerHTML = '<span style="color:#ffd93d;">⏳ Generating primes...</span>';
+
+            fetch('/rsa/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key_size: keySize })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setLoading(btn, false);
+                if (data.error) {
+                    status.innerHTML = `<span style="color:#ff6b6b;">❌ ${data.error}</span>`;
+                    return;
+                }
+                // Display keys
+                const pub = data.public;
+                const priv = data.private;
+                pubBox.innerHTML = `<span class="key-label">🔑 Public Key (${keySize}‑bit)</span><br>
+                                    <span style="color:#b388ff;">n:</span> ${pub.n}<br>
+                                    <span style="color:#b388ff;">e:</span> ${pub.e}`;
+                privBox.innerHTML = `<span class="key-label">🔐 Private Key (${keySize}‑bit)</span><br>
+                                     <span style="color:#b388ff;">n:</span> ${priv.n}<br>
+                                     <span style="color:#b388ff;">d:</span> ${priv.d}`;
+                status.innerHTML = `<span style="color:#69db7c;">✅ Keys generated successfully. (${keySize} bits)</span>`;
+                // Glow effect
+                pubBox.style.borderColor = '#0ff';
+                privBox.style.borderColor = '#0ff';
+                setTimeout(() => { pubBox.style.borderColor = '#7b2ffc'; privBox.style.borderColor = '#7b2ffc'; }, 2000);
+            })
+            .catch(err => {
+                setLoading(btn, false);
+                status.innerHTML = `<span style="color:#ff6b6b;">❌ Network error: ${err.message}</span>`;
+            });
+        });
+
+        // Auto-trigger RSA generation on page load (optional demo)
+        window.addEventListener('load', function() {
+            // Generate default key on load to show something
+            document.getElementById('rsa-generate-btn').click();
+        });
+    </script>
+
+</body>
+</html>
